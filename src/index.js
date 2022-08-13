@@ -1,5 +1,6 @@
 import axios from "axios";
-import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import Notiflix from "notiflix";
+// import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import SimpleLightbox from "simplelightbox";
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
@@ -7,12 +8,8 @@ var lightbox = new SimpleLightbox('.gallery a', {
   captionsData: 'alt',
   captionDelay: 250,
 });
-//Параметри для пагінації
-const params = {
-  page: 1,
-  per_page: 40,
-  q: '',
-};
+
+let getGallery;
 
 const refsEl ={
   form: document.querySelector(".search-form"),
@@ -23,32 +20,36 @@ const refsEl ={
 
 refsEl.getBtn.addEventListener("click", onSumbitForm);
 
-function onSumbitForm() {
-  // const getGallery = refsEl.input.value;
-  // if(getGallery = "") {
-  //   return
-  // }
+function onSumbitForm(e) {
+  e.preventDefault()
+  getGallery = refsEl.input.value;
+  if(getGallery) {
+    refsEl.galleryContainer.innerHTML = "";
+  }
    getPosts()
 }
 
 const getPosts = async () => {
 
   try {
-    const response = await axios.get(`https://pixabay.com/api/?key=29209271-716f3ea82b952e36eef48fa19&q=${refsEl.input.value}&image_type=photo&orientation=horizontal&safesearch=true`);
+    if(refsEl.input.value !== "") {
+      const response = await axios.get(`https://pixabay.com/api/?key=29209271-716f3ea82b952e36eef48fa19&q=${refsEl.input.value}&image_type=photo&orientation=horizontal&safesearch=true`);
     
-    createList(response.data.hits);
+      createList(response.data.hits);
+      console.log(response.data);
+    }
+      Notiflix.Notify.warning("Sorry, there are no images matching your search query. Please try again")
   } 
   
-  catch (error) {
-    error =>
-      Notiflix.Notify.warning("Sorry, there are no images matching your search query. Please try again.")
-  
+  catch {
+    console.log(error);
 };
 
 }
 
 
 function createList(data) {
+  refsEl.input.value = ""
   const result = data.map(({ webformatURL,  largeImageURL, tags, likes, views, comments, downloads}) => {
     return `
     <div class="photo-card">
@@ -73,9 +74,7 @@ function createList(data) {
             <b>${downloads}</b>
           </p>
         </div>
-
-    
-</div>
+    </div>
 `;
   })
   
@@ -83,9 +82,10 @@ function createList(data) {
   
   refsEl.galleryContainer.insertAdjacentHTML(
     "beforeend", result);
-    gallery.refresh()
-    refsEl.input.innerHTML = '';
-};
+    lightbox.refresh()
+}
+
+
 
 
 

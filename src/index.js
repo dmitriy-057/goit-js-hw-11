@@ -1,17 +1,18 @@
 import axios from "axios";
-import Notiflix from 'notiflix';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import SimpleLightbox from "simplelightbox";
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
-// подключение библиотеки SimpleLightbox
-let gallery = new SimpleLightbox(".gallery a", {
-  captions:true,
-  captionSelector: "img",
-  // captionsData: "alt",
-  // captionPosition: "bottom",
-  // captionDelay: 250,
-  enableKeyboard: true,
+var lightbox = new SimpleLightbox('.gallery a', {
+  captionsData: 'alt',
+  captionDelay: 250,
 });
+//Параметри для пагінації
+const params = {
+  page: 1,
+  per_page: 40,
+  q: '',
+};
 
 const refsEl ={
   form: document.querySelector(".search-form"),
@@ -20,54 +21,60 @@ const refsEl ={
   galleryContainer: document.querySelector(".gallery")
 }
 
-refsEl.getBtn.addEventListener("click", sumbitSurch);
+refsEl.getBtn.addEventListener("click", onSumbitForm);
 
-function sumbitSurch(e) {
-  e.preventDefault()
-  getPosts()
+function onSumbitForm() {
+  // const getGallery = refsEl.input.value;
+  // if(getGallery = "") {
+  //   return
+  // }
+   getPosts()
 }
 
 const getPosts = async () => {
-  // e.preventDefault()
+
   try {
     const response = await axios.get(`https://pixabay.com/api/?key=29209271-716f3ea82b952e36eef48fa19&q=${refsEl.input.value}&image_type=photo&orientation=horizontal&safesearch=true`);
     
     createList(response.data.hits);
-    
+  } 
   
-    // createImagesCardsMarkup(response.galleryItems)
-  } catch (error) {
-    console.log(error);
-  }
+  catch (error) {
+    error =>
+      Notiflix.Notify.warning("Sorry, there are no images matching your search query. Please try again.")
+  
 };
 
-// getPosts()
+}
 
 
 function createList(data) {
   const result = data.map(({ webformatURL,  largeImageURL, tags, likes, views, comments, downloads}) => {
     return `
-    <div class="img-thumb">
-    <a href="${webformatURL}">
-  <img  src="${largeImageURL}" alt="${tags }  loading="lazy" 
-  />
-  </a>
+    <div class="photo-card">
+      <div class="img-thumb">
+          <a class="gallery_link" href="${webformatURL}">
+          <img  class="gallery__image" 
+           src="${largeImageURL}" alt="${tags }  loading="lazy" 
+          />
+        </a>
+      </div>
+        <div class="info">
+          <p class="info-item">
+            <b>${likes}</b>
+          </p>
+          <p class="info-item">
+            <b>${views}</b>
+          </p>
+          <p class="info-item">
+            <b>${comments}</b>
+          </p>
+          <p class="info-item">
+            <b>${downloads}</b>
+          </p>
+        </div>
 
-<div class="info">
-  <p class="info-item">
-    <b>${likes}</b>
-  </p>
-  <p class="info-item">
-    <b>${views}</b>
-  </p>
-  <p class="info-item">
-    <b>${comments}</b>
-  </p>
-  <p class="info-item">
-    <b>${downloads}</b>
-  </p>
-</div>
-
+    
 </div>
 `;
   })
@@ -77,6 +84,7 @@ function createList(data) {
   refsEl.galleryContainer.insertAdjacentHTML(
     "beforeend", result);
     gallery.refresh()
+    refsEl.input.innerHTML = '';
 };
 
 

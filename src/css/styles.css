@@ -1,56 +1,62 @@
 body {
     margin: 0px;
     position: relative;
-    /* padding-bottom: 20px; */
     background-color: #f0f0f0;
     font-size: 2%;
     text-align: center;
   }
   .search-form {
     padding: 7px 0px;
-    display: flex;
-    /* gap: 10px; */
-    justify-content: start;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 20px;
+    /* display: flex;
+    justify-content: center; */
   }
   .search-form input {
+    font-size: 18px;
     padding-left: 5px;
+    margin-right: 5px;
     border: transparent;
     outline: transparent;
   }
-  .search-form input:hover {
+  .search-form:hover.search-form input {
     border: transparent;
   }
+ 
   .search-form button {
-    height: 34px;
-    width: 34px;
-    border: 1px solid transparent;
+    font-size: 18px;
+    border: 1px solid rgb(0, 102, 255);
+    border-radius: 4px;
     cursor: pointer;
-    /* background-image: url('/src/image/search.png'); */
+    background-color: rgb(0, 102, 255);
+    color: #f0f0f0;
     background-position: center;
     background-repeat: no-repeat;
     background-size: 30px 30px;
+    padding: 5px;
   }
   
   .gallery {
-    padding: 0px 10px;
-    margin-top: 10px;
-    margin-bottom: 10px;
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    grid-template-columns: repeat(4, 1fr);
+    margin-left: 15px;
+
   }
   .photo-card {
-    flex-basis: calc(100% / 3) - 20px;
-    display: flex;
-    flex-direction: column;
-    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    margin-right: 15px;
+    margin-bottom: 15px;
+    flex-basis: calc((100% - 30px) / 3);
   }
-  .photo-card a {
+  .photo-card:last-child {
+    margin-bottom: 0px;
+    margin-right: 0px;
+  }
+  .gallery_link {
     flex-grow: 1;
   }
   
-  .image {
+  .gallery__image {
     width: 100%;
     height: 100%;
     display: block;
@@ -67,13 +73,21 @@ body {
     padding: 0 5px;
   }
   .info-item {
+    font-size: 16px;
     display: flex;
-    gap: 2px;
     flex-direction: column;
   }
   .load-more {
+    font-size: 18px;
+    border: 1px solid rgb(0, 102, 255);
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: rgb(0, 102, 255);
+    color: #f0f0f0;
+    padding: 5px;
     margin-left: auto;
     margin-right: auto;
+    margin-bottom: 10px;
   }
   .page-up {
     width: 66px;
@@ -86,18 +100,15 @@ body {
     cursor: pointer;
     opacity: 0.4;
     transition: opacity 2s;
-    /* background-image: url('/src/image/UP1.png'); */
   
     background-clip: padding-box;
     background-repeat: no-repeat;
   }
   .page-up:hover {
     opacity: 0.8;
-    /* background-color: red; */
+    
   }
-  .is-hidden {
-    display: none;
-  }
+
   .sl-wrapper {
     cursor: zoom-out;
   }

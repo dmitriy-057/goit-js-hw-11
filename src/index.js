@@ -1,26 +1,29 @@
 import axios from "axios";
 import Notiflix from "notiflix";
-// import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import SimpleLightbox from "simplelightbox";
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
-var lightbox = new SimpleLightbox('.gallery a', {
+const lightbox = new SimpleLightbox('.gallery a', {
   captionsData: 'alt',
   captionDelay: 250,
 });
 
 let getGallery;
-
+let page = 1;
 const refsEl ={
   form: document.querySelector(".search-form"),
   input:document.querySelector("input"),
   getBtn: document.querySelector("button"),
-  galleryContainer: document.querySelector(".gallery")
+  galleryContainer: document.querySelector(".gallery"),
+  loadBtn: document.querySelector(".load-more")
 }
 
 refsEl.getBtn.addEventListener("click", onSumbitForm);
+refsEl.loadBtn.addEventListener("click", onHandleLoadBtn);
+refsEl.loadBtn.style.display = "none";
 
 function onSumbitForm(e) {
+  page = 1;
   e.preventDefault()
   getGallery = refsEl.input.value;
   if(getGallery) {
@@ -29,16 +32,31 @@ function onSumbitForm(e) {
    getPosts()
 }
 
-const getPosts = async () => {
 
+function onHandleLoadBtn(e) {
+  e.preventDefault();
+  page +=1;
+  getPosts();
+}
+
+const getPosts = async () => {
+ 
   try {
-    if(refsEl.input.value !== "") {
-      const response = await axios.get(`https://pixabay.com/api/?key=29209271-716f3ea82b952e36eef48fa19&q=${refsEl.input.value}&image_type=photo&orientation=horizontal&safesearch=true`);
-    
+    if(getGallery !== "") {
+      let response = await axios.get(`https://pixabay.com/api/?key=29209271-716f3ea82b952e36eef48fa19&q=${refsEl.input.value}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${page}`);
+
       createList(response.data.hits);
-      console.log(response.data);
+      if (!response.data.hits.length) {
+        errorMessage()
+        refsEl.loadBtn.style.display = "none";
+      }else{
+        refsEl.loadBtn.style.display = "block";
+      }
+    }else{
+      errorMessage()
+      refsEl.loadBtn.style.display = "none";
     }
-      Notiflix.Notify.warning("Sorry, there are no images matching your search query. Please try again")
+    
   } 
   
   catch {
@@ -49,7 +67,6 @@ const getPosts = async () => {
 
 
 function createList(data) {
-  refsEl.input.value = ""
   const result = data.map(({ webformatURL,  largeImageURL, tags, likes, views, comments, downloads}) => {
     return `
     <div class="photo-card">
@@ -62,16 +79,16 @@ function createList(data) {
       </div>
         <div class="info">
           <p class="info-item">
-            <b>${likes}</b>
+            <b>likes:${likes}</b>
           </p>
           <p class="info-item">
-            <b>${views}</b>
+            <b>views:${views}</b>
           </p>
           <p class="info-item">
-            <b>${comments}</b>
+            <b>comments:${comments}</b>
           </p>
           <p class="info-item">
-            <b>${downloads}</b>
+            <b>downloads:${downloads}</b>
           </p>
         </div>
     </div>
@@ -85,10 +102,10 @@ function createList(data) {
     lightbox.refresh()
 }
 
-
-
-
-
+function errorMessage() {
+  Notiflix.Notify.warning("К сожалению, нет изображений, соответствующих вашему поисковому запросу. Пожалуйста, попробуйте еще раз");
+  
+}
 
 
 
